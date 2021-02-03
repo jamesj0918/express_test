@@ -3,8 +3,7 @@ const express = require('express');
 const mysql = require('mysql');
 
 
-const utils = require('../utils/utils')
-const _query = require('../db/db')
+const utils = require('../utils/utils');
 
 const router = express.Router();
 
@@ -25,7 +24,7 @@ router.use((req, res, next) =>{
 router.get('/post/:id', (req, res) => {
 
     
-    _query(connection, 'SELECT * from Post;', (err, data)=>{
+    utils._query(connection, 'SELECT * from Post;', (err, data)=>{
         if (err) throw err;
         else {
             response_body = utils._response(200, {
@@ -43,14 +42,14 @@ router.post('/post', (req, res) => {
 
     res.type('application/json');
 
-    if (utils._db(req) == 200) {
+    if (utils._code(req) == 200) {
         response_body =  utils._response(200, {
             content : 'Post created',
             title : req.body.title
         });
         res.status(200)
     }
-    else if (utils._db(req) == 404) {
+    else if (utils._code(req) == 404) {
         response_body =  utils._response(404, {
             content : 'Not Found'
         });

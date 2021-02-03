@@ -1,6 +1,3 @@
-const { NOTFOUND } = require("dns");
-const { builtinModules } = require("module")
-
 const _response = (status, body) =>{
     res = {};
     res.status = status;
@@ -9,12 +6,22 @@ const _response = (status, body) =>{
     return res
 }
 
-const _db = (req) => {
-    if(req.title != "Title") {
+const _code = (req) => {
+    if(req.body.title != "Title") {
         return 404;
     }
     else return 200;
 }
 
+const _query = (connection, raw_query, callback) => {
+    connection.query(raw_query, (err, rows, fields) => {
+        if (err) {
+            return(callback(err, null));
+        }
+        else {
+            return(callback(null, rows));
+        }
+    });
+};
 
-module.exports = { _response, _db }
+module.exports = { _response, _query, _code }
