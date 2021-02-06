@@ -1,20 +1,12 @@
 const { response } = require('express');
 const express = require('express');
-const mysql = require('mysql');
 
-
+const db = require('../database/db');
 const utils = require('../utils/utils');
 
 const router = express.Router();
 
-const connection = mysql.createConnection({
-    host     : 'localhost',
-    user     : 'root',
-    password : 'password',
-    database: 'test_db'
-  });
 
-connection.connect();
 
 router.use((req, res, next) =>{
     console.log(`${req.ip} requested on ${req.path}`);
@@ -24,7 +16,7 @@ router.use((req, res, next) =>{
 router.get('/post/:id', (req, res) => {
 
     
-    utils._query(connection, 'SELECT * from Post;', (err, data)=>{
+    utils._query(db, 'SELECT * from Post;', (err, data)=>{
         if (err) throw err;
         else {
             response_body = utils._response(200, {
@@ -34,8 +26,6 @@ router.get('/post/:id', (req, res) => {
             res.status(200).type('application/json').send(response_body);
         }
     });
-
-    
 });
 
 router.post('/post', (req, res) => {

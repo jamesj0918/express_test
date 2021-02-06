@@ -13,8 +13,8 @@ const _code = (req) => {
     else return 200;
 }
 
-const _query = (connection, raw_query, callback) => {
-    connection.query(raw_query, (err, rows, fields) => {
+const _query = (db, raw_query, callback) => {
+    db.query(raw_query, (err, rows, fields) => {
         if (err) {
             return(callback(err, null));
         }
