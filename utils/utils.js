@@ -6,22 +6,12 @@ const _response = (status, body) =>{
     return res
 }
 
-const _code = (req) => {
-    if(req.body.title != "Title") {
-        return 404;
-    }
-    else return 200;
+const _insert = (table, request) => {
+    const columns = Object.keys(request);
+    const values = Object.values(request).map(value => `'${value}'`);
+
+    return query = `INSERT INTO ${table} (${columns.join(', ')}) VALUES (${values.join(', ')});`;
 }
 
-const _query = (db, raw_query, callback) => {
-    db.query(raw_query, (err, rows, fields) => {
-        if (err) {
-            return(callback(err, null));
-        }
-        else {
-            return(callback(null, rows));
-        }
-    });
-};
 
-module.exports = { _response, _query, _code }
+module.exports = { _response, _insert }
