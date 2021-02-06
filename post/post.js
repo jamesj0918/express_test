@@ -1,61 +1,34 @@
 const { response } = require('express');
 const express = require('express');
-const mysql = require('mysql');
 
-
+const _query = require('../database/db');
 const utils = require('../utils/utils');
 
 const router = express.Router();
 
-const connection = mysql.createConnection({
-    host     : 'localhost',
-    user     : 'root',
-    password : 'password',
-    database: 'test_db'
-  });
-
-connection.connect();
 
 router.use((req, res, next) =>{
+    // Middleware goes here
     console.log(`${req.ip} requested on ${req.path}`);
     next();
 });
 
-router.get('/post/:id', (req, res) => {
-
-    
-    utils._query(connection, 'SELECT * from Post;', (err, data)=>{
-        if (err) throw err;
-        else {
-            response_body = utils._response(200, {
-                content : data
-            });
-        
-            res.status(200).type('application/json').send(response_body);
-        }
-    });
-
-    
+router.get('/post', async (req, res) => {
+    let data = await _query('SELECT * FROM Post;');
+    res.send(data);
 });
 
-router.post('/post', (req, res) => {
-
-    res.type('application/json');
-
-    if (utils._code(req) == 200) {
-        response_body =  utils._response(200, {
-            content : 'Post created',
-            title : req.body.title
-        });
-        res.status(200)
+router.post('/post', async (req, res) => {
+    let query_response =  {status: '200 OK'};
+    query_response.data = req.body;
+    try {
+        await _query(utils._insert('post', req.body));    
     }
-    else if (utils._code(req) == 404) {
-        response_body =  utils._response(404, {
-            content : 'Not Found'
-        });
-        res.status(404)
+    catch (error) {
+        query_response.status = '400 Bad Request';   
+        query_response.data = error;     
     }
-    res.send(response_body);
+    res.send(query_response);
 ;})
 
 
