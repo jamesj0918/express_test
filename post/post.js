@@ -1,88 +1,80 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
 
-const _query = require('../database/db');
-const utils = require('../utils/utils');
+const _query = require("../database/db");
+const utils = require("../utils/utils");
 
-
-router.use((req, res, next) =>{
-    // Middleware goes here
-    console.log(`${req.method}  ${req.ip} requested on ${req.path}`);
-    next();
+router.use((req, res, next) => {
+  // Middleware goes here
+  console.log(`${req.method}  ${req.ip} requested on ${req.path}`);
+  next();
 });
 
-router.get('/post', async (req, res) => {
-    let query_response =  {status: '200 OK'};
+router.get("/post", async (req, res) => {
+  let query_response = { status: "200 OK" };
 
-    try {
-        query_response.data = await _query('SELECT * FROM Post;');
-    }
-    catch (error) {
-        query_response.status = '400 Bad Request';   
-        query_response.message = error;     
-    }
-    
-    res.send(query_response);
+  try {
+    query_response.data = await _query("SELECT * FROM Post;");
+  } catch (error) {
+    query_response.status = "400 Bad Request";
+    query_response.message = error;
+  }
+
+  res.send(query_response);
 });
 
-router.post('/post', async (req, res) => {
-    let query_response =  {status: '200 OK'};
+router.post("/post", async (req, res) => {
+  let query_response = { status: "200 OK" };
 
-    try {
-        await _query(utils._insert(table='post', req.body));
-        query_response.data = req.body;
-    }
-    catch (error) {
-        query_response.status = '400 Bad Request';   
-        query_response.message = error;     
-    }
-    res.send(query_response);
-;})
-
-router.delete('/post/:id', async (req, res) => {
-    let query_response =  {status: '200 OK'};
-    
-    try {
-        let query = await _query(utils._select('post', req.params.id));
-
-        if (query.length == 0) {
-            query_response.status = '204 No Content';   
-            query_response.message = `Post with id=${req.params.id} does not exists.`;
-        }
-        else {
-            await _query(utils._delete('post', req.params.id));
-            query_response.message = `Post id ${req.params.id} has been successfully deleted.`;
-        }
-    }
-    catch (error) {
-        query_response.status = '400 Bad Request';   
-        query_response.message = error;     
-    }
-    res.send(query_response);
+  try {
+    await _query(utils._insert((table = "post"), req.body));
+    query_response.data = req.body;
+  } catch (error) {
+    query_response.status = "400 Bad Request";
+    query_response.message = error;
+  }
+  res.send(query_response);
 });
 
-router.put('/post/:id', async (req, res) => {
-    let query_response =  {status: '200 OK'};
-    
-    try {
-        let query = await _query(utils._select('post', req.params.id));
+router.delete("/post/:id", async (req, res) => {
+  let query_response = { status: "200 OK" };
 
-        if (query.length == 0) {
-            query_response.status = '204 No Content ';   
-            query_response.message = `Post with id=${req.params.id} does not exists.`;
-        }
-        else {
-            await _query(utils._update('post', req.params.id, req.body));
-            query_response.message = `Post id ${req.params.id} has been successfully updated.`;
-            query_response.data = req.body;
-        }
-    }
+  try {
+    let query = await _query(utils._select("post", req.params.id));
 
-    catch (error) {
-        query_response.status = '400 Bad Request';   
-        query_response.message = error;     
+    if (query.length == 0) {
+      query_response.status = "204 No Content";
+      query_response.message = `Post with id=${req.params.id} does not exists.`;
+    } else {
+      await _query(utils._delete("post", req.params.id));
+      query_response.message = `Post id ${req.params.id} has been successfully deleted.`;
     }
-    res.send(query_response);
-;})
+  } catch (error) {
+    query_response.status = "400 Bad Request";
+    query_response.message = error;
+  }
+  res.send(query_response);
+});
+
+router.put("/post/:id", async (req, res) => {
+  let query_response = { status: "200 OK" };
+
+  try {
+    let query = await _query(utils._select("post", req.params.id));
+
+    if (query.length == 0) {
+      query_response.status = "204 No Content ";
+      query_response.message = `Post with id=${req.params.id} does not exists.`;
+    } else {
+      await _query(utils._update("post", req.params.id, req.body));
+      query_response.message = `Post id ${req.params.id} has been successfully updated.`;
+      query_response.data = req.body;
+    }
+  } catch (error) {
+    query_response.status = "400 Bad Request";
+    query_response.message = error;
+  }
+  res.send(query_response);
+});
 
 module.exports = router;
